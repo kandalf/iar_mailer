@@ -214,7 +214,10 @@ class ActionMailer::ARSendmail
       opts.on("-c", "--chdir PATH",
               "Use PATH for the application path",
               "Default: #{options[:Chdir]}") do |path|
-        usage opts, "#{path} is not a directory" unless File.directory? path
+        unless File.directory? path
+          usage opts, "#{path} is not a directory" 
+          exit 1
+        end
         usage opts, "#{path} is not readable" unless File.readable? path
         options[:Chdir] = path
       end
@@ -256,6 +259,7 @@ class ActionMailer::ARSendmail
 #{name} must be run from a Rails application's root to deliver email.
 #{Dir.pwd} does not appear to be a Rails application root.
         EOF
+        exit 1
       end
     end
 
@@ -315,7 +319,6 @@ class ActionMailer::ARSendmail
     end
 
     $stderr.puts opts
-    exit 1
   end
 
   ##

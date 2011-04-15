@@ -109,7 +109,7 @@ Last send attempt: Thu Aug 10 11:40:05 %s 2006
 
     assert_equal '/tmp', options[:Chdir]
 
-    argv = %w[-c /nonexistent]
+    argv = %w[-c /nodir]
 
     out, err = capture_io do
       assert_raises SystemExit do
@@ -223,18 +223,14 @@ Last send attempt: Thu Aug 10 11:40:05 %s 2006
 
   def test_class_usage
     out, err = capture_io do
-      assert_raises SystemExit do
-        ActionMailer::ARSendmail.usage 'opts'
-      end
+      ActionMailer::ARSendmail.usage 'opts'
     end
 
     assert_equal '', out
     assert_equal "opts\n", err
 
     out, err = capture_io do
-      assert_raises SystemExit do
-        ActionMailer::ARSendmail.usage 'opts', 'hi'
-      end
+      ActionMailer::ARSendmail.usage 'opts', 'hi'
     end
 
     assert_equal '', out
