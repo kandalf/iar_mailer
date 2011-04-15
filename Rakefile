@@ -8,7 +8,7 @@ $:.unshift(File.expand_path(File.dirname(__FILE__) + '/lib'))
 
 require './lib/action_mailer/ar_sendmail'
 
-Bundler::GemHelper.install_tasks
+Bundler::GemHelper.install_tasks(:name => :ar_mailer)
 
 #Rake::GemPackageTask.new(ar_mailer_gemspec) do |pkg|
   #pkg.gem_spec = ar_mailer_gemspec
