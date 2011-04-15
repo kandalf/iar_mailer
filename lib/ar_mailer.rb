@@ -1,0 +1,3 @@
+module ArMailer
+  # Your code goes here...
+end
