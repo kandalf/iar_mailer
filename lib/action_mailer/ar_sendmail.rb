@@ -342,6 +342,13 @@ class ActionMailer::ARSendmail
     @max_age = options[:MaxAge]
 
     @failed_auth_count = 0
+
+    ActionMailer::Base.email_class.class_eval <<-EVAL
+      def set_error(error_message)
+        self.has_error = 1 if self.respond_to? :has_error=
+        self.last_error = error_message if self.respond_to? :last_error=
+      end
+    EVAL
   end
 
   ##
@@ -385,23 +392,24 @@ class ActionMailer::ARSendmail
           log "sent email %011d from %s to %s: %p" %
                 [email.id, email.from, email.to, res]
         rescue Net::SMTPFatalError => e
-          error = "5xx error sending email %d, flagging it for revision: %p(%s):\n\t%s\n" %  
+          error_message = "5xx error sending email %d, flagging it for revision: %p(%s):\n\t%s\n" %  
                 [email.id, e.message, e.class, e.backtrace.join("\n\t")]
 
           email.last_send_attempt = Time.now.to_i
-          email.has_error = 1
-          email.last_error = error
+          email.set_error(error_message)
           email.save
-          log error
+          log error_message
           session.reset
         rescue Net::SMTPServerBusy => e
           log "server too busy, stopping delivery cycle"
           return
         rescue Net::SMTPUnknownError, Net::SMTPSyntaxError, TimeoutError, Timeout::Error => e
-          email.last_send_attempt = Time.now.to_i
-          email.save rescue nil
-          log "error sending email %d: %p(%s):\n\t%s" %
+          error_message = "error sending email %d: %p(%s):\n\t%s\n" %
                 [email.id, e.message, e.class, e.backtrace.join("\n\t")]
+          email.last_send_attempt = Time.now.to_i
+          email.set_error(error_message)
+          email.save rescue nil
+          log error_message
           session.reset
         end
       end
