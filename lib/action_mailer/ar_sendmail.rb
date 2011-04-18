@@ -52,6 +52,7 @@ class ActionMailer::ARSendmail
   ##
   # Email delivery attempts per run
 
+
   attr_accessor :batch_size
 
   ##
@@ -384,9 +385,14 @@ class ActionMailer::ARSendmail
           log "sent email %011d from %s to %s: %p" %
                 [email.id, email.from, email.to, res]
         rescue Net::SMTPFatalError => e
-          log "5xx error sending email %d, removing from queue: %p(%s):\n\t%s" %
+          error = "5xx error sending email %d, flagging it for revision: %p(%s):\n\t%s\n" %  
                 [email.id, e.message, e.class, e.backtrace.join("\n\t")]
-          email.destroy
+
+          email.last_send_attempt = Time.now.to_i
+          email.has_error = 1
+          email.last_error = error
+          email.save
+          log error
           session.reset
         rescue Net::SMTPServerBusy => e
           log "server too busy, stopping delivery cycle"

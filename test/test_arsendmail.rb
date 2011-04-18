@@ -366,6 +366,8 @@ Last send attempt: Thu Aug 10 11:40:05 %s 2006
     assert_equal 1, Email.records.length
     assert_operator now, :<=, Email.records.first.last_send_attempt
     assert_equal 1, Net::SMTP.reset_called, 'Reset connection on SyntaxError'
+    assert_equal 1, email.has_error
+    assert_equal email.last_error, err
 
     assert_equal '', out
     assert_equal "error sending email 1: \"try again\"(Net::SMTPSyntaxError):\n\tone\n\ttwo\n\tthree\n", err
@@ -381,17 +383,22 @@ Last send attempt: Thu Aug 10 11:40:05 %s 2006
     now = Time.now.to_i
 
     email = Email.create :mail => 'body', :to => 'to', :from => 'from'
+    assert_equal 0, email.last_send_attempt
 
     out, err = capture_io do
       @sm.deliver [email]
     end
 
     assert_equal 0, Net::SMTP.deliveries.length
-    assert_equal 0, Email.records.length
+    assert_equal 1, Email.records.length
     assert_equal 1, Net::SMTP.reset_called, 'Reset connection on SyntaxError'
 
     assert_equal '', out
-    assert_equal "5xx error sending email 1, removing from queue: \"unknown recipient\"(Net::SMTPFatalError):\n\tone\n\ttwo\n\tthree\n", err
+    
+    assert_equal "5xx error sending email 1, flagging it for revision: \"unknown recipient\"(Net::SMTPFatalError):\n\tone\n\ttwo\n\tthree\n", err
+    refute_equal 0, email.last_send_attempt
+    assert_equal 1, email.has_error
+    assert_equal err, email.last_error
   end
 
   def test_deliver_errno_epipe
