@@ -127,7 +127,7 @@ class Email
 
   def self.create(record)
     record = new record[:from], record[:to], record[:mail],
-                 record[:last_send_attempt]
+                 record[:last_send_attempt], record[:last_error]
     records << record
     return record
   end
@@ -151,7 +151,7 @@ class Email
     return records if conditions.nil?
     now = Time.now.to_i - 300
     return records.select do |r|
-      r.last_send_attempt < now
+      r if r.last_error.nil? or r.last_error.empty? and r.last_send_attempt < now 
     end
   end
 
@@ -160,13 +160,14 @@ class Email
     records.clear
   end
 
-  def initialize(from, to, mail, last_send_attempt = nil)
+  def initialize(from, to, mail, last_send_attempt = nil, last_error = nil)
     @from = from
     @to = to
     @mail = mail
     @id = self.class.id += 1
     @created_on = START + @id
     @last_send_attempt = last_send_attempt || 0
+    @last_error = last_error || nil
   end
 
   def destroy

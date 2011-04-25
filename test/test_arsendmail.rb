@@ -504,6 +504,8 @@ Last send attempt: Thu Aug 10 11:40:05 %s 2006
     tried = Email.create :mail => 'body3', :to => 'recip@h3.example.com',
                          :from => nobody
 
+    error_email = Email.create :mail => 'body4', :to => 'recip@h4.example.com', :from => nobody, :last_send_attempt => nil, :last_error => "Some dragon came and cut the cable"
+
     tried.last_send_attempt = Time.now.to_i - 258
 
     found_emails = []
