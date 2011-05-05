@@ -4,7 +4,7 @@ require "ar_mailer/version"
 
 Gem::Specification.new do |s|
   s.name        = "iar_mailer"
-  s.version     = ActionMailer::ARSendmail::VERSION
+  s.version     = ArMailer::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Eric Hodel", "Adam Meehan" "Leonardo Mateo"]
   s.email       = ["leonardomateo@gmail.com"]
