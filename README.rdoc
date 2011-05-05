@@ -1,3 +1,5 @@
+= iar_mailer
+Improved AR Mailer.
 This is a fork from https://github.com/adzap/ar_mailer (A two-phase delivery agent for ActionMailer)
 
 I highly recommed you to read about it if you don't know what it is for.
