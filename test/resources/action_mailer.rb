@@ -118,7 +118,7 @@ class Email
 
   START = Time.parse 'Thu Aug 10 2006 11:19:48'
 
-  attr_accessor :from, :to, :mail, :last_send_attempt, :created_on, :id, :last_error, :has_error
+  attr_accessor :from, :to, :mail, :last_send_attempt, :created_on, :id, :last_error
 
   @records = []
   @id = 0

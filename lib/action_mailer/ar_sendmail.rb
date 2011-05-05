@@ -344,8 +344,10 @@ class ActionMailer::ARSendmail
     @failed_auth_count = 0
 
     ActionMailer::Base.email_class.class_eval <<-EVAL
+      def has_error?
+        not (self.last_error.nil? or self.last_error.to_s.empty?)
+      end
       def set_error(error_message)
-        self.has_error = 1 if self.respond_to? :has_error=
         self.last_error = error_message if self.respond_to? :last_error=
       end
     EVAL

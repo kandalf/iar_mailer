@@ -366,7 +366,7 @@ Last send attempt: Thu Aug 10 11:40:05 %s 2006
     assert_equal 1, Email.records.length
     assert_operator now, :<=, Email.records.first.last_send_attempt
     assert_equal 1, Net::SMTP.reset_called, 'Reset connection on SyntaxError'
-    assert_equal 1, email.has_error
+    assert_equal true, email.has_error?
     assert_equal email.last_error, err
 
     assert_equal '', out
@@ -397,7 +397,7 @@ Last send attempt: Thu Aug 10 11:40:05 %s 2006
     
     assert_equal "5xx error sending email 1, flagging it for revision: \"unknown recipient\"(Net::SMTPFatalError):\n\tone\n\ttwo\n\tthree\n", err
     refute_equal 0, email.last_send_attempt
-    assert_equal 1, email.has_error
+    assert_equal true, email.has_error?
     assert_equal err, email.last_error
   end
 
